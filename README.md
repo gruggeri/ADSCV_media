@@ -1,34 +1,63 @@
----
-output: github_document
----
 
 # Creating a map of Incidence of COVID-19 in Switzerland, by canton
 
-
-```{r message=FALSE, warning=FALSE}
+``` r
 library(tidyverse)
 library(sf)
 library(rcartocolor)
 ```
 
 ## Import data
-```{r}
+
+``` r
 swiss_incidence <- read_csv("resources/data-Ynlb2.csv")
 ```
 
+    ## Parsed with column specification:
+    ## cols(
+    ##   ID = col_character(),
+    ##   Value = col_double()
+    ## )
+
 ## Import shapes
-```{r}
 
+``` r
 swiss_border <- st_read("resources/g2l15.shp")
+```
 
+    ## Reading layer `g2l15' from data source `/Users/gruggeri/Documents/ADSCV/ADSCV_media/resources/g2l15.shp' using driver `ESRI Shapefile'
+    ## Simple feature collection with 1 feature and 12 fields
+    ## geometry type:  POLYGON
+    ## dimension:      XY
+    ## bbox:           xmin: 485411 ymin: 75286.54 xmax: 833837.9 ymax: 295933.8
+    ## epsg (SRID):    21781
+    ## proj4string:    +proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs
+
+``` r
 swiss_lakes <- st_read("resources/g2s15.shp")
+```
 
+    ## Reading layer `g2s15' from data source `/Users/gruggeri/Documents/ADSCV/ADSCV_media/resources/g2s15.shp' using driver `ESRI Shapefile'
+    ## Simple feature collection with 22 features and 9 fields
+    ## geometry type:  MULTIPOLYGON
+    ## dimension:      XY
+    ## bbox:           xmin: 500253.8 ymin: 63872.4 xmax: 774495.3 ymax: 297632.2
+    ## epsg (SRID):    21781
+    ## proj4string:    +proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs
+
+``` r
 swiss_cantons <- st_read("resources/G1K09.shp")
 ```
 
+    ## Reading layer `G1K09' from data source `/Users/gruggeri/Documents/ADSCV/ADSCV_media/resources/G1K09.shp' using driver `ESRI Shapefile'
+    ## Simple feature collection with 26 features and 3 fields
+    ## geometry type:  MULTIPOLYGON
+    ## dimension:      XY
+    ## bbox:           xmin: 485414 ymin: 75286 xmax: 833837 ymax: 295935
+    ## epsg (SRID):    21781
+    ## proj4string:    +proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs
 
-```{r}
-
+``` r
 canton_codes <- tibble::tribble(
                     ~ID,  ~code, ~code_numeric,  
                     "Aargau", "AG",  19, 
@@ -58,25 +87,26 @@ canton_codes <- tibble::tribble(
                        "Zug", "ZG",   9, 
                     "Zürich", "ZH",   1
     )
-
 ```
 
 ## Joining data and geometries together
 
-```{r}
+``` r
 swiss_incidence <- swiss_incidence %>% 
   left_join(canton_codes, "ID")
 ```
 
-
-```{r}
+``` r
 swiss_cantons <- swiss_cantons %>% 
   left_join(swiss_incidence, c("KURZ" = "code"))
 ```
 
+    ## Warning: Column `KURZ`/`code` joining factor and character vector, coercing
+    ## into character vector
+
 ## Divide incidence into categories
 
-```{r}
+``` r
 swiss_cantons <- swiss_cantons %>% 
   mutate(incidence_cat = case_when(
     Value <= 50 ~ "0-50",
@@ -89,10 +119,9 @@ swiss_cantons <- swiss_cantons %>%
                                                           "151-300")))
 ```
 
-
 ## Plot the data
 
-```{r}
+``` r
 ggplot(swiss_cantons) +
   geom_sf(aes(fill = incidence_cat), size = 0.3) +
   scale_fill_carto_d(palette = "BrwnYl",
@@ -126,9 +155,9 @@ ggplot(swiss_cantons) +
         plot.subtitle = ggtext::element_markdown())
 ```
 
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
-```{r}
+``` r
 # Save the plot
 # ggsave(filename = "Incidence.jpg", height = 5, width = 7)
 ```
-
