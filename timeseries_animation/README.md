@@ -14,7 +14,6 @@ cases <- read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/mas
 ```
 
 The following visualisation is inspired by John Burn-Murdoch work.
-\#855C75,\#D9AF6B,\#AF6458,\#736F4C,\#526A83,\#625377,\#68855C,\#9C9C5E,\#A06177,\#8C785D,\#467378,\#7C7C7C
 
 ``` r
 cases <- cases %>%
@@ -23,7 +22,9 @@ cases <- cases %>%
   clean_names()%>% 
   group_by(country_region, date) %>% 
   summarise(cases = sum(cases)) %>% 
-  filter(country_region != "Others" & country_region != "China") %>%
+  filter(country_region != "Others",
+         country_region != "China",
+         country_region != "Cruise Ship") %>%
   group_by(country_region) %>%
   mutate(days_since_100 = as.numeric(date-min(date[cases >= 100]))) %>%
   ungroup()%>%
@@ -32,6 +33,10 @@ cases <- cases %>%
   mutate(new_cases = cases-cases[days_since_100 == 0])%>%
   filter(sum(cases >= 100) >= 5) %>%
   filter(cases >= 100) %>%
+  bind_rows(
+    tibble(country_region = "33% daily rise", days_since_100 = 0:30) %>%
+      mutate(cases = 100*1.33^days_since_100)
+  ) %>% 
   ungroup() %>% 
   mutate(color_label = case_when(
     country_region == "Switzerland" ~ "#D63D32",
@@ -44,22 +49,26 @@ cases <- cases %>%
     country_region == "Spain" ~ "#332288",
     country_region == "Korea, South" ~ "#117733",
     country_region == "Netherlands" ~ "#DDCC77",
-    country_region == "Cruise Ship" ~ "#666666",
+    #country_region == "Cruise Ship" ~ "#666666",
     country_region == "Hong Kong" ~ "#CC503E",
     country_region == "Singapore" ~ "#1D6996",
     country_region == "Japan" ~ "#855C75",
+    country_region == "33% daily rise" ~ "black",
     TRUE ~ "grey90"
-    ))
+    )) %>% 
+  mutate(line_type = ifelse(country_region == "33% daily rise", "2", "1"))
 ```
 
 ``` r
 ggplot(data = cases, aes(days_since_100, cases, 
                          color = color_label,
                          group = country_region)) +
-  geom_point(size = 0.8, alpha = 0.9)+
-  geom_line(size = 0.7, alpha =0.9) +
+  geom_point(size = 0.8, alpha = 0.9, pch = 21)+
+  geom_line(size = 0.7, alpha =0.9, aes(linetype = line_type)) +
   scale_y_log10(expand = expansion(add = c(0,0.1)), breaks=c(100, 500, 2000,  10000, 60000)) +
-  geom_text(aes(x = 40, label = country_region), hjust = 0)+
+ # geom_text(aes(x = days_since_100, label = country_region), hjust = -0.1)+
+  shadowtext::geom_shadowtext(aes(label = paste0(" ",country_region)),
+                              hjust=0, vjust = 0, bg.color = "white") +
   scale_color_identity()+
   theme_minimal() +
   theme(
@@ -77,3 +86,7 @@ ggplot(data = cases, aes(days_since_100, cases,
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-4-1.gif)<!-- -->
+
+``` r
+#anim_save("covid.gif")
+```
