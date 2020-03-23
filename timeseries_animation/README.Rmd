@@ -82,4 +82,7 @@ ggplot(data = cases, aes(days_since_100, cases,
   transition_reveal(days_since_100)
 
 ```
+```{r}
+anim_save("covid.gif")
+```
 
