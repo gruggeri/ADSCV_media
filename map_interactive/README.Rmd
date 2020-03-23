@@ -79,20 +79,6 @@ swiss_cantons <- swiss_cantons %>%
   left_join(swiss_incidence, c("KURZ" = "code"))
 ```
 
-## Divide incidence into categories
-
-```{r}
-swiss_cantons <- swiss_cantons %>% 
-  mutate(incidence_cat = case_when(
-    Value <= 50 ~ "0-50",
-    Value <= 100 ~ "51-100",
-    Value <= 150 ~ "101-150",
-    Value <= 300 ~ "151-300"
-  )) %>% 
-  mutate(incidence_cat = factor(incidence_cat, levels = c("0-50", "51-100",
-                                                          "101-150",
-                                                          "151-300")))
-```
 
 ## Plot the data
 
