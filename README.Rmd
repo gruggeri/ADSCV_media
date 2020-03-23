@@ -1,0 +1,135 @@
+---
+title: "Swiss map"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(sf)
+library(rcartocolor)
+```
+
+## Import data
+```{r}
+swiss_incidence <- read_csv("resources/data-Ynlb2.csv")
+```
+
+## Import shapes
+```{r}
+
+swiss_border <- st_read("resources/g2l15.shp")
+
+swiss_lakes <- st_read("resources/g2s15.shp")
+
+swiss_cantons <- st_read("resources/G1K09.shp")
+```
+
+
+```{r}
+
+canton_codes <- tibble::tribble(
+                    ~ID,  ~code, ~code_numeric,  
+                    "Aargau", "AG",  19, 
+     "Appenzell Innerrhoden", "AI",  15, 
+    "Appenzell Ausserrhoden", "AR",  16, 
+                     "Bern", "BE",   2, 
+          "Basel-Landschaft", "BL",  13, 
+               "Basel-Stadt", "BS",  12, 
+                  "Fribourg", "FR",  10,
+                    "Genève", "GE",  25,
+                    "Glarus", "GL",   8,
+                   "Graubünden", "GR",  18,
+                      "Jura", "JU",  26,
+                   "Luzern", "LU",   3, 
+                 "Neuchâtel", "NE",  24, 
+                 "Nidwalden", "NW",   7, 
+                  "Obwalden", "OW",   6, 
+                "Sankt Gallen", "SG",  17, 
+              "Schaffhausen", "SH",  14, 
+                 "Solothurn", "SO",  11, 
+                    "Schwyz", "SZ",   5, 
+                   "Thurgau", "TG",  20, 
+                    "Ticino", "TI",  21, 
+                       "Uri", "UR",   4, 
+                      "Vaud", "VD",  22, 
+                    "Valais", "VS",  23, 
+                       "Zug", "ZG",   9, 
+                    "Zürich", "ZH",   1
+    )
+
+```
+
+## Joining data and geometries together
+
+```{r}
+swiss_incidence <- swiss_incidence %>% 
+  left_join(canton_codes, "ID")
+```
+
+
+```{r}
+swiss_cantons <- swiss_cantons %>% 
+  left_join(swiss_incidence, c("KURZ" = "code"))
+```
+
+## Divide incidence into categories
+
+```{r}
+swiss_cantons <- swiss_cantons %>% 
+  mutate(incidence_cat = case_when(
+    Value <= 50 ~ "0-50",
+    Value <= 100 ~ "51-100",
+    Value <= 150 ~ "101-150",
+    Value <= 300 ~ "151-300"
+  )) %>% 
+  mutate(incidence_cat = factor(incidence_cat, levels = c("0-50", "51-100",
+                                                          "101-150",
+                                                          "151-300")))
+```
+
+
+## Plot the data
+
+```{r}
+ggplot(swiss_cantons) +
+  geom_sf(aes(fill = incidence_cat), size = 0.3) +
+  scale_fill_carto_d(palette = "BrwnYl",
+                     guide = guide_legend(direction = "horizontal",
+            keyheight = unit(2, units = "mm"),
+            keywidth = unit(70 / 5, units = "mm"),
+            title.position = 'top',
+            title.hjust = 0.5,
+            label.hjust = 0.5,
+            nrow = 1,
+            byrow = T,
+            label.position = "bottom")) +
+  geom_sf(data = swiss_lakes, fill = "#d1eeea", color = "#d1eeea")+
+  ggrepel::geom_label_repel(
+    data = swiss_cantons,
+    aes(label = paste0(KURZ,":",round(Value, digits = 0)), 
+        geometry = geometry),
+    stat = "sf_coordinates",
+    min.segment.length = 0.2,
+    colour = "#541f3f",
+    size = 3,
+    segment.alpha = 0.5
+  ) +
+  labs(title = "<b style='color:#541f3f'> COVID-19 Cases by Canton </b>",
+       subtitle = "<span style='font-size:10pt'>Incidence per 100'000 habitants,by canton </span>",
+       caption = "Source: OFSP | updated 22.03.2020") +
+  theme_void() +
+  theme(legend.title = element_blank(),
+        legend.position = "bottom",
+        plot.title = ggtext::element_markdown(),
+        plot.subtitle = ggtext::element_markdown())
+```
+
+
+```{r}
+# Save the plot
+# ggsave(filename = "Incidence.jpg", height = 5, width = 7)
+```
+
