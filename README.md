@@ -3,6 +3,7 @@
 Scripts to create visualisation for media
 
 ### A static map
+
 ![](static_map_covid/Incidence.jpg)
 
 ### An animated chart
