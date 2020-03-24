@@ -25,7 +25,7 @@ swiss_incidence <- read_csv("resources/data-Ynlb2.csv")
 swiss_border <- st_read("resources/g2l15.shp")
 ```
 
-    ## Reading layer `g2l15' from data source `/Users/gruggeri/Documents/ADSCV/ADSCV_media/resources/g2l15.shp' using driver `ESRI Shapefile'
+    ## Reading layer `g2l15' from data source `/Users/gruggeri/Documents/ADSCV/ADSCV_media/static_map_covid/resources/g2l15.shp' using driver `ESRI Shapefile'
     ## Simple feature collection with 1 feature and 12 fields
     ## geometry type:  POLYGON
     ## dimension:      XY
@@ -37,7 +37,7 @@ swiss_border <- st_read("resources/g2l15.shp")
 swiss_lakes <- st_read("resources/g2s15.shp")
 ```
 
-    ## Reading layer `g2s15' from data source `/Users/gruggeri/Documents/ADSCV/ADSCV_media/resources/g2s15.shp' using driver `ESRI Shapefile'
+    ## Reading layer `g2s15' from data source `/Users/gruggeri/Documents/ADSCV/ADSCV_media/static_map_covid/resources/g2s15.shp' using driver `ESRI Shapefile'
     ## Simple feature collection with 22 features and 9 fields
     ## geometry type:  MULTIPOLYGON
     ## dimension:      XY
@@ -49,7 +49,7 @@ swiss_lakes <- st_read("resources/g2s15.shp")
 swiss_cantons <- st_read("resources/G1K09.shp")
 ```
 
-    ## Reading layer `G1K09' from data source `/Users/gruggeri/Documents/ADSCV/ADSCV_media/resources/G1K09.shp' using driver `ESRI Shapefile'
+    ## Reading layer `G1K09' from data source `/Users/gruggeri/Documents/ADSCV/ADSCV_media/static_map_covid/resources/G1K09.shp' using driver `ESRI Shapefile'
     ## Simple feature collection with 26 features and 3 fields
     ## geometry type:  MULTIPOLYGON
     ## dimension:      XY
