@@ -35,11 +35,10 @@ cases_data <- cases_raw %>%
          new_cases = cases - first(cases)) %>%
   ungroup() %>% 
   bind_rows(
-    tibble(country_region = "33% daily rise", days_since_100 = 0:30) %>%
+    tibble(country_region = "33% daily rise", days_since_100 = 0:25) %>%
       mutate(cases = 100*1.33^days_since_100)
   ) %>%
-  mutate(color_label = forcats::fct_collapse(
-    country_region,
+  mutate(color_label = forcats::fct_collapse(country_region,
     "#D63D32" = "Switzerland",
     "#888888" = "Italy",
     "#6699CC" = "Iran",
@@ -53,13 +52,18 @@ cases_data <- cases_raw %>%
     "#CC503E" = "Hong Kong",
     "#1D6996" = "Singapore",
     "#855C75" = "Japan",
-    "black" = "33% daily rise",
+    "black"   = "33% daily rise",
     other_level = "grey90"),
     color_label = fct_relevel(color_label, "grey90")) %>%
   arrange(color_label) %>%
   mutate(country_region = fct_inorder(country_region),
-         line_type = ifelse(country_region == "33% daily rise", "2", "1"))
+         line_type = ifelse(country_region == "33% daily rise", "2", "1")) %>% 
+  mutate(country_label = ifelse(color_label == "grey90", "", as.character(country_region)))
 ```
+
+ 
+ 
+
 
 ```{r}
 ggplot(data = cases_data, 
@@ -72,7 +76,7 @@ ggplot(data = cases_data,
             size = 0.7, alpha =0.9) +
   scale_y_log10(expand = expansion(add = c(0,0.1)), 
                 breaks=c(100, 500, 2000,  10000, 60000)) +
-  shadowtext::geom_shadowtext(aes(label = paste0(" ",country_region)),
+  shadowtext::geom_shadowtext(aes(label = paste0(" ",country_label)),
                               hjust=0, vjust = 0, bg.color = "white") +
   scale_color_identity()+
   theme_minimal() +
