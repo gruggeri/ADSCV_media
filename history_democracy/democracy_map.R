@@ -1,7 +1,9 @@
-####################
-##
-##
-###################
+####################################
+## 2021 January 7
+## Author: Giulia Ruggeri
+## legend customisation inspired by
+## https://timogrossenbacher.ch
+####################################
 
 
 library(sf)
