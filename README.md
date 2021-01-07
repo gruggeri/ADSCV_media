@@ -13,3 +13,7 @@ Scripts to create visualisation for media
 ### An interactive chart
 
 ![](map_interactive/leaflet_gif.gif)
+
+### Age of democracy in the world
+
+![](history_democracy/history_of_democracy.png)
