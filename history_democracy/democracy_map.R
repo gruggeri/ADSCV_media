@@ -38,8 +38,8 @@ world <- world %>%
   mutate(quantiles = cut(age,
                          breaks = myvec,
                          labels = labels$labs,
-                         include.lowest = TRUE, # includes the lowest 'breaks' value
-                         ordered_result = TRUE, # orders the factors/bins
+                         include.lowest = TRUE, 
+                         ordered_result = TRUE,
   ))
 
 
@@ -59,16 +59,12 @@ ggplot() +
     label.hjust = 0.5,
     nrow = 1,
     byrow = T,
-    # also the guide needs to be reversed
     label.position = "bottom"
   )) +
   theme_void() +
-  theme(
-    legend.position = "bottom",
-  ) +
   labs(
-    title = "US is the most ancient democracy",
-    subtitle = "Age of the democracies in 2015 ",
+    subtitle = "US is the most ancient democracy",
+    title = "Age of the democracies in 2015 ",
     caption = "Source: Our world in Data \n
     Boix, Miller, and Rosato, 2013, 2018",
     fill = "Age of democracy (Years)"
@@ -76,13 +72,15 @@ ggplot() +
   theme(
     plot.title = element_text(size = 18, hjust = 0.5),
     plot.subtitle = element_text(size = 10, hjust = 0.5,
+                                 color = "#70284A",
+                                 face = "bold",
                                  margin = margin(b = -0.1,
                                                  t = -0.1,
                                                  l = 2,
                                                  unit = "cm"),
                                  debug = F),
     legend.title = element_text(size = 8),
-    # captions
+    legend.position = "bottom",
     plot.caption = element_text(size = 7,
                                 hjust = .5,
                                 margin = margin(t = 0.2,
@@ -92,7 +90,7 @@ ggplot() +
     
   )
   
-
+ggsave("history_democracy/history_of_democracy.png")
 
 
 # 
