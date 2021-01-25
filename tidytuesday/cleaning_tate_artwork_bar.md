@@ -88,6 +88,26 @@ wrap it into `fct_rev()`, that will reverse the factors order.
 With just this extra line in our code, `mutate(medium =
 fct_rev(fct_infreq(medium)))` I have achieved my goal.
 
+``` r
+artwork %>% 
+  filter(year > 1990) %>% 
+  mutate(medium = fct_infreq(medium)) %>% 
+  pull(medium) %>% 
+  levels() %>% 
+  head(10)
+```
+
+    ##  [1] "Etching on paper"                               
+    ##  [2] "Screenprint on paper"                           
+    ##  [3] "Photograph, gelatin silver print on paper"      
+    ##  [4] "Lithograph on paper"                            
+    ##  [5] "Digital print on paper"                         
+    ##  [6] "Oil paint on canvas"                            
+    ##  [7] "Photograph, colour, Chromogenic print, on paper"
+    ##  [8] "Etching and aquatint on paper"                  
+    ##  [9] "Print on paper"                                 
+    ## [10] "Drypoint on paper"
+
 ![](illustrations/illustrations.003.jpeg)
 
 ![](illustrations/illustrations.002.jpeg)
